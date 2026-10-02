@@ -28,13 +28,10 @@ Route::get('/contacto', function () {
 */
 
 Route::prefix('comercios')->name('comercios.')->group(function () {
-
-    Route::get('/', [ComercioController::class, 'index'])
-        ->name('index');
-
-    Route::get('/{comercio}', [ComercioController::class, 'show'])
-        ->name('show');
+    Route::get('/', [ComercioController::class, 'index'])->name('index');
+    Route::get('/{comercio}', [ComercioController::class, 'show'])->name('show');
 });
+
 
 /*
 |--------------------------------------------------------------------------
