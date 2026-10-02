@@ -1,59 +1,295 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
+<div align="center">
+
+# 💳 TaskBoard · Semana 6
+
+### Eloquent ORM · Migraciones · Relaciones · MySQL
+
+Proyecto desarrollado para la asignatura **Integración de Sistemas**  
+Universidad Pedagógica de El Salvador
+
+**Ciclo II - 2026**
+
+---
+
+</div>
+
+## 📌 Sobre esta semana
+
+Durante la Semana 6, TaskBoard dejó de trabajar únicamente con datos simulados y comenzó a utilizar una base de datos MySQL real mediante **Eloquent ORM**.
+
+En esta etapa se construyeron y relacionaron los modelos principales del sistema:
+
+```text
+Comercio
+   ↓
+Transaccion
+   ↓
+EventoTransaccion
+
+También se trabajó con migraciones, llaves foráneas, relaciones Eloquent, Route Model Binding y eager loading con with().
+🗓️ Guía N.º 1 · Jueves
+Eloquent ORM y Migraciones en Laravel
+Durante la primera parte de la semana se trabajó en la estructura de datos del proyecto.
+✅ Actividades realizadas
+- Configuración de Laravel para trabajar con MySQL.
+- Creación de la base de datos taskboard.
+- Uso de migraciones.
+- Creación del modelo Comercio.
+- Creación del modelo Transaccion.
+- Creación del modelo EventoTransaccion.
+- Uso de llaves foráneas.
+- Pruebas con Laravel Tinker.
+- Uso de $fillable.
+- Agregado de nuevas columnas mediante una migración adicional.
+🗃️ Tabla comercios
+La tabla principal de comercios contiene:
+id
+nombre_comercio
+rubro
+fecha_afiliacion
+telefono
+correo_contacto
+created_at
+updated_at
+
+Las columnas telefono y correo_contacto fueron agregadas mediante una migración nueva, sin modificar la migración original.
+💰 Tabla transacciones
+La tabla de transacciones contiene:
+id
+comercio_id
+monto
+moneda
+cliente_nombre
+metodo_pago
+estado
+created_at
+updated_at
+
+La columna:
+comercio_id
+
+funciona como llave foránea hacia la tabla comercios.
+🔄 Tabla eventos_transaccion
+La tabla de eventos permite registrar cambios relacionados con una transacción.
+id
+transaccion_id
+estado_anterior
+estado_nuevo
+created_at
+updated_at
+
+La columna:
+transaccion_id
+
+funciona como llave foránea hacia transacciones.
+🗓️ Guía N.º 2 · Viernes
+Relaciones Eloquent y Datos Reales
+Durante la segunda parte de la semana se conectaron los modelos mediante relaciones Eloquent.
+🔗 Relaciones implementadas
+Comercio → Transacciones
+public function transacciones(): HasMany
+{
+    return $this->hasMany(Transaccion::class);
+}
+
+Un comercio puede tener muchas transacciones.
+Transaccion → Comercio
+public function comercio(): BelongsTo
+{
+    return $this->belongsTo(Comercio::class);
+}
+
+Cada transacción pertenece a un comercio.
+Transaccion → Eventos
+public function eventos(): HasMany
+{
+    return $this->hasMany(EventoTransaccion::class);
+}
+
+Una transacción puede tener múltiples eventos.
+EventoTransaccion → Transaccion
+public function transaccion(): BelongsTo
+{
+    return $this->belongsTo(Transaccion::class);
+}
+
+Cada evento pertenece a una transacción.
+🧩 Modelo de relaciones
+┌──────────────┐
+│   Comercio   │
+└──────┬───────┘
+       │ hasMany
+       ▼
+┌──────────────┐
+│ Transaccion  │
+└──────┬───────┘
+       │ hasMany
+       ▼
+┌────────────────────┐
+│ EventoTransaccion  │
+└────────────────────┘
+
+En sentido inverso:
+EventoTransaccion
+       │
+       └── belongsTo → Transaccion
+                           │
+                           └── belongsTo → Comercio
+
+⚡ Eager Loading y problema N+1
+Se trabajó con:
+Transaccion::with('comercio')->get();
+
+El uso de with() permite cargar las relaciones de manera anticipada y reducir la cantidad de consultas realizadas a la base de datos.
+Sin with():
+1 consulta principal
++
+consultas adicionales por cada relación
+
+Con with():
+1 consulta para transacciones
++
+1 consulta para los comercios relacionados
+
+🧭 Route Model Binding
+También se implementó Route Model Binding.
+Ejemplo:
+Route::get('/transaccion/{transaccion}', [TransaccionController::class, 'show']);
+
+Controlador:
+public function show(Transaccion $transaccion)
+{
+    return $transaccion->load('comercio');
+}
+
+Laravel obtiene automáticamente el modelo correspondiente al parámetro recibido en la URL.
+🌐 Rutas principales
+/comercios
+/comercios/{comercio}
+/transacciones
+/transaccion/{transaccion}
+/eventos-transaccion
+
+🧪 Pruebas realizadas
+Se realizaron pruebas mediante Laravel Tinker para verificar las relaciones.
+Ejemplo:
+$comercio = App\Models\Comercio::find(1);
+
+$comercio->transacciones()->create([
+    'monto' => 45.00,
+    'moneda' => 'USD',
+    'cliente_nombre' => 'María López',
+    'metodo_pago' => 'Tarjeta',
+    'estado' => 'Iniciada',
+]);
+
+También se verificó la relación inversa:
+$transaccion = App\Models\Transaccion::find(1);
+
+$transaccion->comercio->nombre_comercio;
+
+Resultado:
+Café Amanecer
+
+🔎 Consulta de eventos relacionados
+El controlador de eventos utiliza:
+EventoTransaccion::with('transaccion.comercio')->get();
+
+Esto permite obtener:
+Evento
+└── Transaccion
+    └── Comercio
+
+en una misma respuesta JSON.
+📁 Estructura principal
+taskboard-semana6/
+│
+├── app/
+│   │
+│   ├── Http/
+│   │   └── Controllers/
+│   │       ├── ComercioController.php
+│   │       ├── TransaccionController.php
+│   │       └── EventoTransaccionController.php
+│   │
+│   └── Models/
+│       ├── Comercio.php
+│       ├── Transaccion.php
+│       └── EventoTransaccion.php
+│
+├── database/
+│   └── migrations/
+│
+├── routes/
+│   └── web.php
+│
+├── artisan
+├── composer.json
+└── README.md
+
+🛠️ Tecnologías utilizadas
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+
+PHP 8.2 · Laravel · Eloquent ORM · MySQL · Composer · Artisan · Tinker · Git · GitHub · DBeaver
 </p>
 
-## About Laravel
+▶️ Cómo ejecutar el proyecto
+1. Clonar el repositorio
+git clone https://github.com/StanleyJv/taskboard-semana6.git
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+2. Entrar al proyecto
+cd taskboard-semana6
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+3. Instalar dependencias
+composer install
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+4. Crear el archivo .env
+copy .env.example .env
 
-## Learning Laravel
+5. Generar la clave
+php artisan key:generate
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+6. Configurar MySQL en .env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=taskboard
+DB_USERNAME=root
+DB_PASSWORD=
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+7. Ejecutar migraciones
+php artisan migrate
 
-## Laravel Sponsors
+8. Levantar el servidor
+php artisan serve
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Luego abrir:
+http://127.0.0.1:8000
 
-### Premium Partners
+✅ Resultados obtenidos
+Durante la Semana 6 se logró:
+✔ Conectar Laravel con MySQL
+✔ Crear modelos Eloquent
+✔ Crear migraciones
+✔ Implementar llaves foráneas
+✔ Definir relaciones hasMany y belongsTo
+✔ Trabajar con datos reales
+✔ Aplicar Route Model Binding
+✔ Utilizar eager loading con with()
+✔ Comprobar el problema N+1
+✔ Consultar relaciones anidadas
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+<div align="center">
 
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+👨‍💻 Autor
+Josthyn Stanley Cruz Vásquez
+Ingeniería en Sistemas y Computación
+Universidad Pedagógica de El Salvador
+📘 Integración de Sistemas
+Docente: Ing. Oscar Armando Contreras
+Ciclo II - 2026
+💳 TaskBoard · Semana 6
+Eloquent • Migraciones • Relaciones • MySQL
+</div>
+```
