@@ -81,8 +81,9 @@ app/Models/Comercio.php
 | `created_at` | Fecha de creación |
 | `updated_at` | Última actualización |
 
-Copia todo esto dentro de README.md:
-# 💳 TaskBoard — Semana 6
+---
+
+## 💳 TaskBoard — Semana 6
 
 > Proyecto integrador de **Integración de Sistemas** desarrollado con Laravel, Eloquent ORM y MySQL.
 
@@ -439,3 +440,25 @@ Antes de ejecutar el proyecto se necesita:
 - Extensión pdo_mysql.
 - Git.
 - Un editor o IDE.
+
+✅ Resultados de la Semana 6
+✔ Laravel conectado a MySQL
+✔ Modelos Eloquent creados
+✔ Migraciones ejecutadas
+✔ Llaves foráneas implementadas
+✔ Relaciones hasMany y belongsTo
+✔ Uso de $fillable
+✔ Datos reales desde MySQL
+✔ Pruebas mediante Tinker
+✔ Eager Loading con with()
+✔ Route Model Binding
+✔ Consulta de relaciones anidadas
+✔ Comprobación del problema N+1
+
+👨‍💻 Autor
+Josthyn Stanley Cruz Vásquez
+Ingeniería en Sistemas y Computación
+Universidad Pedagógica de El Salvador
+Asignatura: Integración de Sistemas
+Docente: Ing. Oscar Armando Contreras
+Ciclo: 02-2026
