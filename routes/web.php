@@ -21,20 +21,44 @@ Route::get('/contacto', function () {
     return 'Josthyn Stanley Cruz Vásquez - josthynvasquez32022@gmail.com';
 });
 
+/*
+|--------------------------------------------------------------------------
+| Rutas de comercios
+|--------------------------------------------------------------------------
+*/
+
 Route::prefix('comercios')->name('comercios.')->group(function () {
 
     Route::get('/', [ComercioController::class, 'index'])
         ->name('index');
 
-    Route::get('/{id}', [ComercioController::class, 'show'])
-        ->name('show')
-        ->where('id', '[0-9]+');
-
+    Route::get('/{comercio}', [ComercioController::class, 'show'])
+        ->name('show');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Rutas de transacciones
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/transacciones', [TransaccionController::class, 'index']);
 
+Route::get('/transaccion/{transaccion}', [TransaccionController::class, 'show']);
+
+/*
+|--------------------------------------------------------------------------
+| Rutas de eventos de transacción
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/eventos-transaccion', [EventoTransaccionController::class, 'index']);
+
+/*
+|--------------------------------------------------------------------------
+| Rutas de apoyo / ejemplos anteriores
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/estados', function () {
     return [
