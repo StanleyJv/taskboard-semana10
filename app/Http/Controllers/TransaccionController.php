@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GuardarTransaccionRequest;
 use App\Models\Comercio;
 use App\Models\Transaccion;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class TransaccionController extends Controller
@@ -24,7 +24,7 @@ class TransaccionController extends Controller
         return view('transacciones.create', compact('comercio'));
     }
 
-    public function store(Request $request)
+    public function store(GuardarTransaccionRequest $request)
     {
         $transaccion = Transaccion::create([
             'comercio_id' => $request->comercio_id,

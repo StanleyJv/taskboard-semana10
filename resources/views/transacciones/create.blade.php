@@ -10,7 +10,7 @@
         Comercio: {{ $comercio->nombre_comercio }}
     </p>
 
-    <form action="{{ route('transacciones.store') }}" method="POST">
+<form action="{{ route('transacciones.store') }}" method="POST">
 
         @csrf
 
@@ -25,7 +25,14 @@
             id="cliente"
             name="cliente_nombre"
             type="text"
+            value="{{ old('cliente_nombre') }}"
         >
+
+        @error('cliente_nombre')
+            <span class="error" style="color:red;">
+                {{ $message }}
+            </span>
+        @enderror
 
         <br><br>
 
@@ -35,7 +42,14 @@
             name="monto"
             type="number"
             step="0.01"
+            value="{{ old('monto') }}"
         >
+
+        @error('monto')
+            <span class="error" style="color:red;">
+                {{ $message }}
+            </span>
+        @enderror
 
         <br><br>
 
