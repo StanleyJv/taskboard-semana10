@@ -1,7 +1,9 @@
+{{-- Semana 7 · Blade — Componente reutilizable --}}
+{{-- Uso: <x-badge-actividad :totalTransacciones="$comercio->transacciones_count" /> --}}
 @props(['totalTransacciones'])
 
-@if ($totalTransacciones === 0)
-    <span>Sin actividad</span>
+@if ($totalTransacciones == 0)
+    <span class="badge gris">Sin actividad</span>
 @else
-    <span>Activo</span>
+    <span class="badge verde">Activo</span>
 @endif

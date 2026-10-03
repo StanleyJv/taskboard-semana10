@@ -1,11 +1,11 @@
+{{-- Semana 7 · Blade — Componente reutilizable --}}
+{{-- Uso: <x-badge-estado :estado="$transaccion->estado" /> --}}
 @props(['estado'])
 
 @if ($estado === 'Completada')
-    <span>✔ {{ $estado }}</span>
-
+    <span class="badge verde">✔ Completada</span>
 @elseif ($estado === 'Fallida')
-    <span>✗ {{ $estado }}</span>
-
+    <span class="badge rojo">✗ Fallida</span>
 @else
-    <span>⏳ {{ $estado }}</span>
+    <span class="badge amarillo">⏳ {{ $estado }}</span>
 @endif
