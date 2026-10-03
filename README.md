@@ -1,52 +1,34 @@
-# 📘 TaskBoard — Semana 7
+# 🚀 TaskBoard — Semana 8
 
-> Proyecto integrador de **Integración de Sistemas** desarrollado con Laravel, Blade, Eloquent ORM y MySQL.
+> Repaso integrador de **Routing, Eloquent ORM y Blade** en Laravel.
 
 ![Laravel](https://img.shields.io/badge/Laravel-12.x-red?logo=laravel)
 ![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php)
 ![MySQL](https://img.shields.io/badge/MySQL-8.x-4479A1?logo=mysql)
-![Composer](https://img.shields.io/badge/Composer-2.x-885630?logo=composer)
 ![GitHub](https://img.shields.io/badge/GitHub-Repositorio-181717?logo=github)
 
 ---
 
 ## 📖 Descripción
 
-**TaskBoard** es una pasarela de pagos desarrollada como proyecto integrador de la asignatura **Integración de Sistemas**.
+Durante la **Semana 8** se realizó un repaso integrador del flujo completo de una petición en TaskBoard:
 
-Durante la **Semana 7** se implementaron vistas dinámicas con **Blade** para mostrar comercios afiliados y sus transacciones directamente en el navegador.
+**Route → Controlador → Eloquent → Blade**
 
-En esta semana se trabajó con:
-
-- 🖥️ Vistas Blade dinámicas.
-- 🔁 Directivas `@if`, `@forelse` y `@section`.
-- 🧩 Layout reutilizable con `@extends` y `@yield`.
-- 🏷️ Componente `<x-badge-estado>`.
-- ✅ Componente `<x-badge-actividad>`.
-- 🔢 Conteo de transacciones con `withCount()`.
-- 🔗 Route Model Binding.
-- 🏪 Listado y detalle de comercios.
+La práctica se enfocó en consolidar lo aprendido en la Unidad II y comprobar el funcionamiento completo del panel de comercios.
 
 ---
 
-## ✨ Funcionalidades
+## ✅ Trabajo realizado
 
-- ✅ Listado de comercios afiliados.
-- ✅ Detalle individual de cada comercio.
-- ✅ Visualización de transacciones asociadas.
-- ✅ Estado visual de cada transacción.
-- ✅ Indicador de comercio **Activo** o **Sin actividad**.
-- ✅ Mensaje según la cantidad de transacciones.
-- ✅ Layout compartido entre las vistas.
-
----
-
-## 🛣️ Rutas principales
-
-```text
-/comercios
-/comercios/{comercio}
-```
+- 🛣️ Verificación de rutas y Route Model Binding.
+- 🔗 Relaciones `hasMany()` y `belongsTo()`.
+- ⚡ Uso de `withCount()` y `load()` para evitar N+1.
+- 🧩 Layouts y componentes Blade.
+- 🏪 Panel de comercios y transacciones.
+- 📊 Resumen de actividad para 0, 1 y 2+ transacciones.
+- 🔽 Orden de comercios por mayor actividad.
+- 🧪 Validación con comercios con y sin transacciones.
 
 ---
 
@@ -57,14 +39,22 @@ En esta semana se trabajó con:
 - Blade
 - Eloquent ORM
 - MySQL / MariaDB
-- Composer
 - Git y GitHub
 
 ---
 
-## 🔗 Repositorio
+## 🔗 Rutas principales
 
-https://github.com/StanleyJv/taskboard-semana7
+```text
+/comercios
+/comercios/{comercio}
+```
+
+---
+
+## 🌐 Repositorio
+
+https://github.com/StanleyJv/taskboard-semana8
 
 ---
 
@@ -72,4 +62,3 @@ https://github.com/StanleyJv/taskboard-semana7
 
 **Josthyn Stanley Cruz Vásquez**  
 Ingeniería en Sistemas y Computación
-
