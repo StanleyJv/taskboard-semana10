@@ -1,11 +1,11 @@
-# 🧩 TaskBoard — Semana 9
+# 🧩 TaskBoard — Semana 10
 
 [![Laravel](https://img.shields.io/badge/Laravel-12-red?logo=laravel)](https://laravel.com/)
 [![PHP](https://img.shields.io/badge/PHP-8.2-blue?logo=php)](https://www.php.net/)
 [![MySQL](https://img.shields.io/badge/MySQL-TaskBoard-blue?logo=mysql)](https://www.mysql.com/)
 [![UPED](https://img.shields.io/badge/UPED-Integración_de_Sistemas-0B2E59)](#)
 
-Proyecto desarrollado para la asignatura **Integración de Sistemas** de la **Universidad Pedagógica de El Salvador**, correspondiente a la **Semana 9**.
+Proyecto desarrollado para la asignatura **Integración de Sistemas** de la **Universidad Pedagógica de El Salvador**, correspondiente a la **Semana 10**.
 
 ## 👨‍💻 Estudiante
 
@@ -15,76 +15,149 @@ Universidad Pedagógica de El Salvador
 
 ## 🎯 Objetivo de la semana
 
-Durante esta semana se trabajó con formularios en Laravel, solicitudes **GET y POST**, protección **CSRF**, búsqueda de comercios y el registro real de nuevas transacciones utilizando Eloquent.
+Durante la Semana 10 se reforzó el formulario **Nueva Transacción** mediante validaciones, mensajes de error personalizados y un proceso de refactorización hacia un **Form Request** de Laravel.
 
-## ✅ Funcionalidades implementadas
+La funcionalidad principal del formulario se mantiene, pero ahora el código es más seguro, organizado y reutilizable.
 
-- Formulario sandbox para practicar controles HTML.
-- Campo de correo electrónico y opción de transacción recurrente.
-- Buscador de comercios mediante método `GET`.
-- Filtrado por nombre de comercio.
-- Prueba deliberada del error **419 Page Expired**.
-- Protección de formularios `POST` mediante `@csrf`.
-- Formulario real **Nueva transacción**.
-- Rutas con nombre `transacciones.create` y `transacciones.store`.
-- Registro de transacciones mediante Eloquent.
-- Redirección al comercio después del registro.
-- Mensaje flash: **“Transacción registrada con éxito.”**
-- Patrón **POST / Redirect / GET (PRG)** para evitar duplicados al recargar.
-- Enlace **+ Nueva transacción** desde el panel de cada comercio.
-- Experimento de seguridad sobre campos enviados desde el formulario.
-- Conservación del diseño Blade utilizado en semanas anteriores.
+## ✅ Jueves — Validación de formularios
 
-## 🔎 Buscador GET
+Se implementaron reglas de validación directamente en `TransaccionController.php`.
 
-El panel de comercios permite realizar búsquedas utilizando una URL similar a:
+### Reglas aplicadas
 
-```text
-/comercios?buscar=cafe
+```php
+'comercio_id' => 'required|exists:comercios,id',
+'cliente_nombre' => 'required|string|min:3|max:255',
+'monto' => 'required|numeric|min:0.01',
 ```
 
-El filtro se procesa en `ComercioController` utilizando `Request` y Eloquent.
+### Mensajes personalizados
 
-## 🔐 Protección CSRF
-
-Se realizó una prueba eliminando temporalmente `@csrf` de un formulario `POST`, provocando el error:
-
-```text
-419 | Page Expired
+```php
+'cliente_nombre.required' => 'Debes indicar el nombre del cliente.',
+'cliente_nombre.min' => 'El nombre del cliente es demasiado corto.',
+'monto.required' => 'Debes indicar un monto.',
+'monto.numeric' => 'El monto debe ser un número.',
+'monto.min' => 'El monto debe ser mayor a cero.',
 ```
 
-Posteriormente se restauró `@csrf`, comprobando que Laravel vuelve a procesar correctamente la solicitud.
+También se mejoró el formulario con:
 
-## 💳 Nueva transacción
+- `@error` para mostrar mensajes debajo de cada campo.
+- `old()` para conservar los datos escritos cuando ocurre un error.
+- Validación de que el comercio exista realmente en la base de datos con `exists:comercios,id`.
+- Reto adicional: mínimo de 3 caracteres para el nombre del cliente.
 
-Ruta del formulario:
+## ✅ Viernes — Form Request
+
+Se creó:
 
 ```text
-/comercios/{comercio}/transacciones/nueva
+app/Http/Requests/GuardarTransaccionRequest.php
 ```
 
-El formulario permite registrar:
+La validación fue trasladada desde el controlador hacia esta clase.
 
-- Comercio
-- Nombre del cliente
-- Monto
+El Form Request contiene:
 
-Al guardar correctamente, Laravel redirige nuevamente al panel del comercio y muestra un mensaje de confirmación.
+- `authorize()`
+- `rules()`
+- `messages()`
+- `attributes()`
 
-> Nota: el proyecto conserva un campo `metodo_pago` proveniente de la estructura desarrollada en semanas anteriores, por lo que se asigna internamente el valor `No especificado` al registrar desde el formulario de Semana 9.
+### authorize()
 
-## 🧪 Pruebas realizadas
+```php
+public function authorize(): bool
+{
+    return true;
+}
+```
 
-- Visualización de todos los comercios sin filtro.
-- Búsqueda de `cafe`.
-- Búsqueda sin resultados con `xyz`.
-- Persistencia del término de búsqueda al recargar.
-- Error 419 al enviar POST sin `@csrf`.
-- Envío correcto al restaurar `@csrf`.
-- Registro real de una nueva transacción.
-- Confirmación visual de la nueva transacción.
-- Recarga posterior sin duplicar registros.
-- Prueba de manipulación del campo `estado`.
+### rules()
+
+```php
+public function rules(): array
+{
+    return [
+        'comercio_id' => 'required|exists:comercios,id',
+        'cliente_nombre' => 'required|string|min:3|max:255',
+        'monto' => 'required|numeric|min:0.01',
+    ];
+}
+```
+
+### attributes()
+
+Se agregaron nombres amigables para los campos:
+
+```php
+'cliente_nombre' => 'nombre del cliente',
+'monto' => 'monto de la transacción',
+'comercio_id' => 'comercio',
+```
+
+## 🧹 Controlador más limpio
+
+El método `store()` ahora utiliza:
+
+```php
+public function store(GuardarTransaccionRequest $request)
+```
+
+y ya no contiene una llamada directa a:
+
+```php
+$request->validate(...)
+```
+
+De esta forma, la validación queda separada del controlador y puede reutilizarse.
+
+## 🔐 Seguridad y validación
+
+Se comprobaron distintos escenarios:
+
+- Cliente vacío.
+- Monto vacío.
+- Monto no numérico.
+- Monto igual o menor que cero.
+- Comercio inexistente (`9999`).
+- Datos válidos.
+- Nombre del cliente demasiado corto.
+
+Laravel bloquea los datos inválidos antes de intentar guardarlos en MySQL.
+
+## 🔁 Reutilización del Form Request
+
+Como experimento se reutilizó `GuardarTransaccionRequest` en un método temporal para comprobar:
+
+```php
+$request->validated()
+```
+
+Esto permitió observar que Laravel devuelve únicamente los campos definidos dentro de `rules()`.
+
+Después del experimento, el método y la ruta temporal fueron eliminados.
+
+## 💳 Flujo final
+
+El flujo del formulario queda así:
+
+```text
+Formulario Nueva Transacción
+        ↓
+GuardarTransaccionRequest
+        ↓
+Validación de reglas
+        ↓
+TransaccionController@store
+        ↓
+Eloquent / MySQL
+        ↓
+Redirección al comercio
+        ↓
+Mensaje de éxito
+```
 
 ## 🛠️ Tecnologías
 
@@ -93,10 +166,12 @@ Al guardar correctamente, Laravel redirige nuevamente al panel del comercio y mu
 - MySQL / MariaDB
 - Blade
 - Eloquent ORM
+- Form Requests
 - XAMPP
-- Git y GitHub
+- Git
+- GitHub
 
-## ▶️ Ejecución
+## ▶️ Ejecución del proyecto
 
 ```bash
 php artisan serve
@@ -111,7 +186,7 @@ http://127.0.0.1:8000/comercios
 ## 📂 Repositorio
 
 ```text
-https://github.com/StanleyJv/taskboard-semana9
+https://github.com/StanleyJv/taskboard-semana10
 ```
 
 ---
