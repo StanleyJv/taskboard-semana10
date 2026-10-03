@@ -32,7 +32,6 @@ Route::prefix('comercios')->name('comercios.')->group(function () {
     Route::get('/{comercio}', [ComercioController::class, 'show'])->name('show');
 });
 
-
 /*
 |--------------------------------------------------------------------------
 | Rutas de transacciones
@@ -76,3 +75,24 @@ Route::get('/transaccion/demo', function () {
         'estado' => 'Aprobada'
     ];
 });
+
+/*
+|--------------------------------------------------------------------------
+| Semana 9 - Laboratorio de formularios
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/practica/formulario-demo', function () {
+    return view('practica.formulario_demo');
+});
+
+Route::post('/practica/enviar', function () {
+    return 'Formulario recibido correctamente.';
+});
+Route::get('/comercios/{comercio}/transacciones/nueva',
+    [TransaccionController::class, 'create']
+)->name('transacciones.create');
+
+Route::post('/transacciones',
+    [TransaccionController::class, 'store']
+)->name('transacciones.store');
